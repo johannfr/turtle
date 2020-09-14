@@ -1,9 +1,13 @@
 [package]
 name = "rust-turtle-graphics"
 version = "0.1.0"
-authors = ["Jakob Buron <jakob.buron@silabs.com>"]
+authors = [
+    "Oleksandr Vdovenko <Oleksandr.Vdovenko@silabs.com>",
+    "Johann Fridriksson <Johann.Fridriksson@silabs.com>",
+    "Jakob Buron <jakob.buron@silabs.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+cargo-fuzz = "*"
