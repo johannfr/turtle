@@ -1,4 +1,6 @@
 
+use std::collections::HashMap;
+
 #[derive(Debug)]
 pub enum Stmt {
     PenUp,
@@ -7,7 +9,9 @@ pub enum Stmt {
     Backward(i32),
     Turn(i32),
     ChangeColor(Color),
-    ChangeColorRGB(u8, u8, u8),
+    ChangeColorRGB(i32, i32, i32),
+    Label(String),
+    Loop(String, i32),
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -56,7 +60,9 @@ impl<'program> Interpreter<'program> {
     }
 
     fn execute(&mut self) -> Result<Vec<Line>, String> {
-        let mut pc = 0;
+        let mut pc: usize = 0;
+        let mut labels = HashMap::new();
+        let mut loop_store: HashMap<usize, i32> = HashMap::new();
         let mut world: Vec<Line> = Vec::new();
         let mut turtle = Turtle::new(
             Point {
@@ -86,8 +92,24 @@ impl<'program> Interpreter<'program> {
                     Color::Blue => ColorRGB{r: 0, g: 0, b: 255},
                     Color::Black => ColorRGB{r: 0, g: 0, b: 0},
                 },
-                &Stmt::ChangeColorRGB(r, g, b) => turtle.color = ColorRGB{r, g, b},
-                other => return Err(format!("Unimplemented command: {:?}", other)),
+                &Stmt::ChangeColorRGB(r, g, b) => turtle.color = ColorRGB{
+                    r: r as u8,
+                    g: g as u8,
+                    b: b as u8
+                },
+                Stmt::Label(s) => { labels.entry(s).or_insert(pc); },
+                Stmt::Loop(l, c) => {
+                        *loop_store.entry(pc).or_insert(*c + 1) -= 1;
+                        let counter = loop_store.get(&pc).unwrap();
+                        if *counter <= 0 {
+                            loop_store.remove(&pc);
+                        }
+                        else
+                        {
+                            pc = *labels.get(l).unwrap();
+                        }
+                },
+                other => return Err(format!("Unimplemented statement: {:?}", other)),
             }
             pc += 1;
         }

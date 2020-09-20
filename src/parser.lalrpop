@@ -12,12 +12,14 @@ Statement: ast::Stmt = {
     "go_backward" "(" <Number> ")" => ast::Stmt::Backward(<>),
     "turn" "(" <Number> ")" => ast::Stmt::Turn(<>),
     "color" "(" <Color> ")" => ast::Stmt::ChangeColor(<>),
-    "color" "(" <ColorValue> "," <ColorValue> "," <ColorValue> ")"
+    "color" "(" <Number> "," <Number> "," <Number> ")"
         => ast::Stmt::ChangeColorRGB(<>),
+    <LabelName> ":" => ast::Stmt::Label(<>),
+    "loop" "(" <LabelName> "," <Number> ")" => ast::Stmt::Loop(<>),
 }
 
-Number: i32 = <s:r"[0-9]+"> => i32::from_str(s).unwrap();
-ColorValue: u8 = <s:r"[0-9]+"> => u8::from_str(s).unwrap();
+Number: i32 = <s:r"-*[0-9]+"> => i32::from_str(s).unwrap();
+LabelName: String = <s:r"[a-zA-Z]+[a-zA-Z0-9]*"> => s.to_string();
 
 Color: ast::Color = {
     "RED" => ast::Color::Red,

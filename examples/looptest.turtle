@@ -1,0 +1,13 @@
+pen_up
+turn(10)
+go_forward(30)
+turn(-10)
+pen_down
+color(RED)
+side:
+go_forward(30)
+corner:
+go_forward(5)
+turn(10)
+loop(corner, 8)
+loop(side, 3)
