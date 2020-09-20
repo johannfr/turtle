@@ -31,3 +31,16 @@ Stop drawing when subsequently moving forward.
 ## pen_down
 
 Start drawing when subsequently moving forward.
+
+# Running the example
+```bash
+cargo build
+cargo run example/test.turtle
+```
+
+You will now have an output-file called svg_rendering.html
+
+Open that up with your favourite browser, e.g. on macOS:
+```bash
+open svg_rendering.html
+```
