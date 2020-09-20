@@ -35,7 +35,7 @@ Start drawing when subsequently moving forward.
 # Running the example
 ```bash
 cargo build
-cargo run example/test.turtle
+cargo run examples/test.turtle
 ```
 
 You will now have an output-file called svg_rendering.html
