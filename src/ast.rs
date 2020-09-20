@@ -106,7 +106,10 @@ impl<'program> Interpreter<'program> {
                         }
                         else
                         {
-                            pc = *labels.get(l).unwrap();
+                            pc = match labels.get(l) {
+                                Some(v) => *v,
+                                None => { return Err(format!("Undefined label: {}", l)); },
+                            }
                         }
                 },
                 other => return Err(format!("Unimplemented statement: {:?}", other)),

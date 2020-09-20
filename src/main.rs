@@ -68,7 +68,13 @@ fn main() {
     let world: Vec<turtle::ast::Line> =
     match turtle::compile(&source) {
         Ok(c) => {
-            c.interpret().unwrap()
+            match c.interpret() {
+                Ok(w) => w,
+                Err(e) => {
+                    eprintln!("Runtime error: {}", e);
+                    std::process::exit(1);
+                },
+            }
         },
         Err(e) => {
             eprintln!("Compilation error: {}", e);
