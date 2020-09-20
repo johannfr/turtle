@@ -1,15 +1,9 @@
+extern crate turtle;
+
 use std::fs::File;
 use std::io::{Write, Error};
 
-struct Point {
-    x : isize, 
-    y : isize
-}
-
-struct Line {
-    start : Point, 
-    end : Point
-}
+use turtle::ast::*;
 
 //// draw_the_world(&vec!<Line>, ) - 
 fn draw_the_world(world: &Vec<Line>) -> Result<(), Error> {
@@ -24,7 +18,23 @@ fn draw_the_world(world: &Vec<Line>) -> Result<(), Error> {
     write!(output, "<svg width=\"{}\" height=\"{}\">\n", 200, 200)?;
     // write line from vector 
         for lines in world {
-            write!(output, "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" style=\"stroke:rgb(255,0,0);stroke-width:2\"/>\n", lines.start.x, lines.start.y, lines.end.x, lines.end.y);
+            write!(
+                output,
+                "<line
+                    x1=\"{}\"
+                    y1=\"{}\"
+                    x2=\"{}\"
+                    y2=\"{}\"
+                    style=\"stroke:rgb({},{},{});stroke-width:2\"
+                />\n",
+                lines.start.x,
+                lines.start.y,
+                lines.end.x,
+                lines.end.y,
+                lines.color.r,
+                lines.color.g,
+                lines.color.b,
+            )?;
         }     
     write!(output, "{}\n", svg_footer)?; 
     write!(output, "{}\n", html_footer)?;
@@ -32,48 +42,40 @@ fn draw_the_world(world: &Vec<Line>) -> Result<(), Error> {
     Ok(())
 }
 
-// Test data:
-// <line x1="0" y1="10" x2="20" y2="20" />
-// <line x1="20" y1="20" x2="40" y2="10" />
-// <line x1="40" y1="10" x2="60" y2="80" />
-// <line x1="60" y1="80" x2="80" y2="90" />
-// <line x1="80" y1="90" x2="100" y2="20" />
-
 fn main() {
+    use std::io::*;
+    let mut source = String::new();
+    match std::env::args().nth(1) {
+        Some(filename) => {
+            File::open(&filename)
+                .expect(&format!("Can't open {}", &filename))
+                .read_to_string(&mut source)
+                .expect(&format!("Can't read {}", &filename));
+        }
 
-    // Lets build some 5 lines world :)
-    let mut world: Vec<Line> = Vec::new();
-    
-    let line0 = Line {
-        start: Point {x:0, y:10},
-        end: Point {x:20, y:20}
+        None => {
+            stdin()
+                .read_to_string(&mut source)
+                .expect("Can't read stdin");
+        }
+    }
+
+    if source.is_empty() {
+        println!("No input");
+        return;
+    }
+
+    let world: Vec<turtle::ast::Line> =
+    match turtle::compile(&source) {
+        Ok(c) => {
+            c.interpret().unwrap()
+        },
+        Err(e) => {
+            eprintln!("Compilation error: {}", e);
+            std::process::exit(1);
+        },
     };
 
-    let line1 = Line {
-        start: Point {x:20, y:20},
-        end: Point {x:40, y:10}
-    };
-
-    let line2 = Line {
-        start: Point {x:40, y:10},
-        end: Point {x:60, y:80}
-    };
-
-    let line3 = Line {
-        start: Point {x:60, y:80},
-        end: Point {x:80, y:90}
-    };
-
-    let line4 = Line {
-        start: Point {x:80, y:90},
-        end: Point {x:100, y:20}
-    };
-  
-    world.push(line0);
-    world.push(line1);
-    world.push(line2);
-    world.push(line3);
-    world.push(line4);
 
     let status = draw_the_world(&world);
 

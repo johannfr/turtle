@@ -1,0 +1,9 @@
+go_forward(15)
+turn(45)
+pen_up
+go_forward(10)
+pen_down
+color(RED)
+turn(45)
+go_forward(30)
+color(123, 23, 12)

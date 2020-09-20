@@ -1,0 +1,27 @@
+use std::str::FromStr;
+use crate::ast;
+
+grammar;
+
+pub Program = <Statement*>;
+
+Statement: ast::Stmt = {
+    "pen_up" => ast::Stmt::PenUp,
+    "pen_down" => ast::Stmt::PenDown,
+    "go_forward" "(" <Number> ")" => ast::Stmt::Forward(<>),
+    "go_backward" "(" <Number> ")" => ast::Stmt::Backward(<>),
+    "turn" "(" <Number> ")" => ast::Stmt::Turn(<>),
+    "color" "(" <Color> ")" => ast::Stmt::ChangeColor(<>),
+    "color" "(" <ColorValue> "," <ColorValue> "," <ColorValue> ")"
+        => ast::Stmt::ChangeColorRGB(<>),
+}
+
+Number: i32 = <s:r"[0-9]+"> => i32::from_str(s).unwrap();
+ColorValue: u8 = <s:r"[0-9]+"> => u8::from_str(s).unwrap();
+
+Color: ast::Color = {
+    "RED" => ast::Color::Red,
+    "GREEN" => ast::Color::Green,
+    "BLUE" => ast::Color::Blue,
+    "BLACK" => ast::Color::Black,
+}
